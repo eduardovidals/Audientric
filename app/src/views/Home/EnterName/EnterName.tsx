@@ -1,5 +1,6 @@
 import {
-  EnterNameContainer, EnterNameForm,
+  EnterNameContainer,
+  EnterNameForm,
   EnterNameSubmit,
   EnterNameText,
   EnterNameTextField
@@ -9,9 +10,9 @@ import Aos from "aos";
 import "aos/dist/aos.css";
 import {useAppDispatch} from "store/hooks";
 import {updateHomeScreen} from "store/ui/HomeScreen/HomeScreen.slice";
-import {Controller, useForm} from "react-hook-form";
+import {useForm} from "react-hook-form";
 import * as UserServiceApi from 'apis/UserServiceApi';
-import {createUser} from "apis/UserServiceApi";
+import * as ClassServiceApi from 'apis/ClassServiceApi';
 
 interface EnterNameProps {
   bgColor: string
@@ -29,33 +30,48 @@ function EnterName(props: EnterNameProps) {
     Aos.init();
   }, [])
 
-  const onSubmit = async (data:any) => {
-    console.log(data);
-    const user = await UserServiceApi.createUser({
-      fullName: data.fullName
-    });
-    setOnSubmitClick(true);
-    dispatch(updateHomeScreen('WelcomeScreen'));
+  const onSubmit = async (data: any) => {
+    if (data.fullName === "Frontend123") {
+      localStorage.setItem('audientricUserId', "635a315a786b352a6b365825");
+      dispatch(updateHomeScreen('AdminScreen'));
+    } else {
+      const user = await UserServiceApi.createUser({
+        fullName: data.fullName
+      });
+
+      console.log('CREATED THE USER!!!!!!');
+      console.log(user);
+
+      await ClassServiceApi.joinClass({userId: user._id, classId: '6359407d47773e1371ff8cec'});
+
+      localStorage.setItem('audientricUserId', user._id);
+      localStorage.setItem('audientricName', data.fullName);
+
+      setOnSubmitClick(true);
+      dispatch(updateHomeScreen('WelcomeScreen'));
+    }
   }
 
   return (
     <EnterNameContainer data-aos={'fade-up'} data-aos-duration={2000}>
-      <EnterNameForm>
+      <EnterNameForm onSubmit={(e) => {
+        e.preventDefault();
+      }}>
         <EnterNameText backgroundColor={bgColor}> Please enter your full name. </EnterNameText>
-        <Controller name={'fullName'} control={control} defaultValue={""}
-                    rules={{
-                      required: {
-                        value: true,
-                        message: 'Please enter your full name.'
-                      }
-                    }} render={({field: {onChange, value}, fieldState: {error}}) => (
-          <EnterNameTextField onChange={onChange} value={value} backgroundColor={bgColor} required label="Full Name"
-                              clickedField={activeField} size={'small'} error={!!error}
-                              helperText={error ? error.message : ''}
-                              onClick={() => setActiveField(true)} onBlur={() => setActiveField(false)}/>
-        )}/>
+        <EnterNameTextField control={control} label={'Full Name'} formName={'fullName'}
+                            onClick={() => setActiveField(true)} required
+                            onBlur={() => setActiveField(false)} backgroundColor={bgColor}
+                            clickedField={activeField} size={'small'}
+                            rules={{
+                              required: {
+                                value: true,
+                                message: 'Please enter your full name.'
+                              }
+                            }}>
+        </EnterNameTextField>
 
-        <EnterNameSubmit backgroundColor={bgColor} onClick={handleSubmit(onSubmit)} disabled={onSubmitClick}>
+        <EnterNameSubmit backgroundColor={bgColor} onClick={handleSubmit(onSubmit)} disabled={onSubmitClick}
+                         type={'submit'}>
           Submit
         </EnterNameSubmit>
       </EnterNameForm>

@@ -3,11 +3,24 @@ import styled, {keyframes} from "styled-components";
 export const WelcomeContainer = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: center;
   margin: 0 20px;
+  height: 100%;
+  width: 100%;
+`
+
+export const CurrentlyOnlineText = styled.h2`
+  text-align: center;
 `
 
 export const WelcomeText = styled.h1`
   text-align: center;
+`
+
+export const HelloContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-top: 5px;
 `
 
 export const WaveAnimation = keyframes`

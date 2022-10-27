@@ -1,7 +1,8 @@
 import styled from "styled-components";
 import * as muiStyles from "@mui/material/styles";
-import {Button, TextField} from "@mui/material";
 import {ColorProps} from "views/Home/Home.styles";
+import AudentricInput from "components/lib/TextField/AudentricInput";
+import AudentricButton from "components/lib/Button/AudentricButton";
 
 export const EnterNameContainer = styled.div`
   display: flex;
@@ -33,7 +34,7 @@ export const EnterNameText = styled.b<ColorProps>`
   transition: color 2s ease;
 `
 
-export const EnterNameTextField = muiStyles.styled(TextField, {
+export const EnterNameTextField = muiStyles.styled(AudentricInput, {
   shouldForwardProp:
     (prop) => prop !== 'backgroundColor' && prop !== 'clickedField'
 })<ColorProps>(({
@@ -58,7 +59,7 @@ export const EnterNameTextField = muiStyles.styled(TextField, {
   }
 }))
 
-export const EnterNameSubmit = muiStyles.styled(Button, {
+export const EnterNameSubmit = muiStyles.styled(AudentricButton, {
   shouldForwardProp: (prop) => prop !== 'backgroundColor'
 })<ColorProps>(({backgroundColor}) => ({
   color: 'white',

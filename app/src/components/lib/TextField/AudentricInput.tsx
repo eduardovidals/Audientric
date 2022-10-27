@@ -4,8 +4,9 @@ import {TextField, TextFieldProps} from "@mui/material";
 
 type AudentricInputProps = TextFieldProps & {
   label: string,
-  formName: string,
-  rules: UseControllerProps['rules']
+  formName?: string,
+  rules?: UseControllerProps['rules'],
+  control?: UseControllerProps['control']
 }
 
 function AudentricInput(props: AudentricInputProps) {
@@ -14,8 +15,8 @@ function AudentricInput(props: AudentricInputProps) {
   const {control} = useForm({mode: 'onChange'});
 
   return (
-    <Controller name={formName ? formName : convertToCamelCase(formName)} control={control} defaultValue={""}
-                rules={rules} render={({field: {onChange, value}, fieldState: {error}}) => (
+    <Controller name={formName ? formName : convertToCamelCase(label)} control={props.control ? props.control : control}
+                defaultValue={""} rules={rules} render={({field: {onChange, value}, fieldState: {error}}) => (
       <TextField {...rest} onChange={onChange} value={value} label={label} error={!!error}
                  helperText={error ? error.message : ''}/>
     )}/>

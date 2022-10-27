@@ -6,7 +6,11 @@ import theme, {GlobalStyle} from "utils/theme";
 import {Provider} from "react-redux";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {store} from "store/store";
+import {library} from "@fortawesome/fontawesome-svg-core";
 import Home from "views/Home/Home";
+import {faCheck, faExclamation, faQuestion, faXmark} from "@fortawesome/free-solid-svg-icons";
+
+library.add(faCheck, faExclamation, faQuestion, faXmark);
 
 function App() {
   return (

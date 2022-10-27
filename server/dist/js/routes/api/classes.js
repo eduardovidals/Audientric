@@ -26,34 +26,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const ClassController = __importStar(require("../../controllers/class"));
 const express_1 = __importDefault(require("express"));
-const UserController = __importStar(require("../../controllers/user"));
 const router = (0, express_1.default)();
 /**
  * @swagger
- * /users:
- *   get:
- *     summary: Retrieve a list of users.
- *     description: Retrieve a list of users.
- *     tags: [Users]
- *     responses:
- *       200:
- *         description: A list of users.
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/user'
- */
-router.get('/', UserController.getUsers);
-/**
- * @swagger
- * /users:
+ * /classes:
  *   post:
- *     summary: Create a user.
- *     description: Creates a user that will be part of the class.
- *     tags: [Users]
+ *     summary: Creates a class.
+ *     description: Creates a class that will be able to help students.
+ *     tags: [Classes]
  *     requestBody:
  *       required: true
  *       content:
@@ -61,62 +43,86 @@ router.get('/', UserController.getUsers);
  *           schema:
  *             type: object
  *             properties:
- *               fullName:
+ *               hostId:
  *                 type: string
  *                 required: true
- *                 description: the full name of the user
- *                 example: "Eduardo Vidals"
+ *                 description: the userId of the user hosting the class
+ *                 example: "6351a813b9f96f7f148029c7"
  *     responses:
  *       200:
- *         description: The created user.
+ *         description: The created class.
  *         content:
  *           application/json:
  *             schema:
  *               type: object
- *               $ref: '#/components/schemas/user'
+ *               $ref: '#/components/schemas/class'
  */
-router.post("/", UserController.createUser);
+router.post('/', ClassController.createClass);
 /**
  * @swagger
- * /users/{userId}:
- *   delete:
- *     summary: Delete a user by ID.
- *     description: Delete a user with the specified id from the database.
- *     tags: [Users]
- *     parameters:
- *       - in: path
- *         name: userId
- *         required: true
- *         description: id of the user to be deleted
- *         schema:
- *          type: string
- *     responses:
- *       200:
- *         description: A message specifying the user was successfully deleted.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Successfully deleted user."
- */
-router.delete("/:userId", UserController.deleteUser);
-/**
- * @swagger
- * /users/{userId}/status:
- *   put:
- *     summary: Change the status of a user.
- *     description: Changes the status of the user with the specified userId.
- *     tags: [Users]
+ * /classes/{classId}:
+ *   get:
+ *     summary: Retrieves a class by id
+ *     description: Retrieves a class by id
+ *     tags: [Classes]
  *     parameters:
  *       - in: path
  *         type: string
- *         name: userId
+ *         name: classId
  *         required: true
- *         description: id of the user to be changed
+ *         description: id of the class
  *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: The class.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               $ref: '#/components/schemas/class'
+ */
+router.get('/:classId', ClassController.getClassById);
+/**
+ * @swagger
+ * /classes/{classId}/users:
+ *   get:
+ *     summary: Retrieves the users of a class
+ *     description: Retrieves the users of a class using the class id
+ *     tags: [Classes]
+ *     parameters:
+ *       - in: path
+ *         type: string
+ *         name: classId
+ *         required: true
+ *         description: id of the class
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: The array of users.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/user'
+ */
+router.get('/:classId/users', ClassController.getClassUsers);
+/**
+ * @swagger
+ * /classes/{classId}/status:
+ *   put:
+ *     summary: Change the status of a class.
+ *     description: Changes the status of the class with the specified classId.
+ *     tags: [Classes]
+ *     parameters:
+ *       - in: path
+ *         name: classId
+ *         required: true
+ *         description: id of the class to be changed
+ *         schema:
+ *          type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -128,29 +134,29 @@ router.delete("/:userId", UserController.deleteUser);
  *                 type: string
  *                 required: true
  *                 description: the status of the user
- *                 enum: [initial, done, issue]
+ *                 enum: [initial, started, ended]
  *     responses:
  *       200:
- *         description: The updated user.
+ *         description: The updated class.
  *         content:
  *           application/json:
  *             schema:
  *               type: object
- *               $ref: '#/components/schemas/user'
+ *               $ref: '#/components/schemas/class'
  */
-router.put("/:userId/status", UserController.updateStatus);
+router.put('/:classId/status', ClassController.updateStatus);
 /**
  * @swagger
- * /users/{userId}/issues:
+ * /classes/{classId}/users:
  *   put:
- *     summary: Updates the user's issues.
- *     description: Adds an issue to the user's issues in the database.
- *     tags: [Users]
+ *     summary: Allows a user to join a class
+ *     description: Allows a user to join a class by using their respective userId & classId
+ *     tags: [Classes]
  *     parameters:
  *       - in: path
- *         name: userId
+ *         name: classId
  *         required: true
- *         description: id of the user to be changed
+ *         description: id of the class that is being joined
  *         schema:
  *          type: string
  *     requestBody:
@@ -160,19 +166,19 @@ router.put("/:userId/status", UserController.updateStatus);
  *           schema:
  *             type: object
  *             properties:
- *               issue:
+ *               userId:
  *                 type: string
  *                 required: true
- *                 description: the issue to be added to the user
- *                 example: "I am having trouble with CSS."
+ *                 description: id of the user that is joining the class
+ *                 example: "6351a813b9f96f7f148029c7"
  *     responses:
  *       200:
- *         description: The updated user.
+ *         description: The updated class.
  *         content:
  *           application/json:
  *             schema:
  *               type: object
- *               $ref: '#/components/schemas/user'
+ *               $ref: '#/components/schemas/class'
  */
-router.put("/:userId/issues", UserController.updateIssues);
+router.put('/:classId/users', ClassController.joinClass);
 exports.default = router;

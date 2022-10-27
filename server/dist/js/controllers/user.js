@@ -12,16 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.createUser = exports.getUsers = void 0;
+exports.updateIssues = exports.updateStatus = exports.deleteUser = exports.createUser = exports.getUsers = void 0;
 const user_1 = __importDefault(require("../models/user"));
 const socket_1 = __importDefault(require("../util/socket"));
 const getUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    return user_1.default.find()
+    return user_1.default.find().sort({ createdAt: -1 })
         .then(users => {
-        return res.status(200).json({
-            message: 'Successfully fetched users',
-            users
-        });
+        return res.status(200).json(users);
     })
         .catch(e => {
         return res.status(404).send({
@@ -34,15 +31,12 @@ exports.getUsers = getUsers;
 const createUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     user_1.default.create(req.body)
         .then(user => {
-        // Sends message to all connected users
+        // ends message to all connected users
         socket_1.default.getInstance().emit("user event", {
             action: "add",
             user
         });
-        return res.json({
-            message: "Successfully created user.",
-            user
-        });
+        return res.json(user);
     })
         .catch(e => {
         return res.status(404).send({
@@ -53,7 +47,7 @@ const createUser = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
 });
 exports.createUser = createUser;
 const deleteUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    user_1.default.findByIdAndRemove(req.params.id)
+    user_1.default.findByIdAndRemove(req.params.userId)
         .then(() => {
         return res.json({
             message: 'Successfully deleted user.'
@@ -67,3 +61,48 @@ const deleteUser = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     });
 });
 exports.deleteUser = deleteUser;
+const updateStatus = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId } = req.params;
+    const { status } = req.body;
+    user_1.default.findByIdAndUpdate(userId, { status, updatedAt: new Date(new Date().toISOString()) }, { new: true })
+        .then(user => {
+        socket_1.default.getInstance().emit("user event", {
+            action: "updateStatus",
+            status,
+            userId
+        });
+        return res.json(user);
+    })
+        .catch(e => {
+        return res.status(404).send({
+            error: e.message,
+            message: "Unable to update user's status."
+        });
+    });
+});
+exports.updateStatus = updateStatus;
+const updateIssues = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId } = req.params;
+    const { issue } = req.body;
+    user_1.default.findByIdAndUpdate(userId, {
+        $push: {
+            "issues": issue
+        },
+        updatedAt: new Date(new Date().toISOString())
+    }, { new: true })
+        .then(user => {
+        socket_1.default.getInstance().emit("user event", {
+            action: "updateIssues",
+            issue,
+            user
+        });
+        return res.json(user);
+    })
+        .catch(e => {
+        return res.status(404).send({
+            error: e.message,
+            message: "Unable to update user's issues."
+        });
+    });
+});
+exports.updateIssues = updateIssues;
