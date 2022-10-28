@@ -12,6 +12,7 @@ const socket_1 = __importDefault(require("./util/socket"));
 const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const swagger_schemas_1 = __importDefault(require("./config/swagger-schemas"));
+const serverless_http_1 = __importDefault(require("serverless-http"));
 const swaggerDefinition = {
     openapi: '3.0.0',
     info: {
@@ -55,10 +56,11 @@ app.use(express_1.default.json());
 // use routes
 app.use('/api/users', users_1.default);
 app.use('/api/classes', classes_1.default);
-app.get('/', (req, res) => res.send('Hello world!'));
+app.get('/api/test', (req, res) => res.send('Hello world!'));
 const port = process.env.PORT || 8082;
 const server = app.listen(port, () => console.log(`Server running on port ${port}`));
 const io = socket_1.default.getInstance(server);
 io.on("connection", (socket) => {
     console.log("Client connected");
 });
+module.exports.handler = (0, serverless_http_1.default)(app);

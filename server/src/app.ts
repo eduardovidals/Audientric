@@ -8,6 +8,7 @@ import AudentricSocket from './util/socket';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
 import swaggerSchemas from "./config/swagger-schemas";
+import serverless from 'serverless-http';
 
 const swaggerDefinition = {
   openapi: '3.0.0',
@@ -62,7 +63,7 @@ app.use(express.json());
 app.use('/api/users', users);
 app.use('/api/classes', classes)
 
-app.get('/', (req, res) => res.send('Hello world!'));
+app.get('/api/test', (req, res) => res.send('Hello world!'));
 
 const port = process.env.PORT || 8082;
 
@@ -73,4 +74,6 @@ const io = AudentricSocket.getInstance(server);
 io.on("connection", (socket: Socket) => {
   console.log("Client connected");
 });
+
+module.exports.handler = serverless(app);
 
