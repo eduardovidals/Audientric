@@ -56,8 +56,8 @@ app.use(express_1.default.json());
 // use routes
 app.use('/api/users', users_1.default);
 app.use('/api/classes', classes_1.default);
-app.use('/.netlify/functions/server', users_1.default); // path must route to lambda
-app.use('/.netlify/functions/server', classes_1.default); // path must route to lambda
+app.use('/.netlify/functions/server/users', users_1.default); // path must route to lambda
+app.use('/.netlify/functions/server/classes', classes_1.default); // path must route to lambda
 app.get('/api/test', (req, res) => res.send('Hello world!'));
 const port = process.env.PORT || 8082;
 const server = app.listen(port, () => console.log(`Server running on port ${port}`));

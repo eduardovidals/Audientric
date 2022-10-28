@@ -63,8 +63,8 @@ app.use(express.json());
 app.use('/api/users', users);
 app.use('/api/classes', classes)
 
-app.use('/.netlify/functions/server', users);  // path must route to lambda
-app.use('/.netlify/functions/server', classes);  // path must route to lambda
+app.use('/.netlify/functions/server/users', users);  // path must route to lambda
+app.use('/.netlify/functions/server/classes', classes);  // path must route to lambda
 
 app.get('/api/test', (req, res) => res.send('Hello world!'));
 
