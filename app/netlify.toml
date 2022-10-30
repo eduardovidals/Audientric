@@ -1,0 +1,7 @@
+[build]
+    functions = "functions"
+[dev]
+    command = "yarn start && node functions/app.js"
+    functions = "functions"
+    port = 9000
+    targetPort = 3000

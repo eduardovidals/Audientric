@@ -1,7 +1,6 @@
 [build]
     functions = "functions"
 [dev]
-    command = "node dist/js/app.js"
     functions = "functions"
     publish = "dist/js"
-    port = 9000
+    port = 9200
