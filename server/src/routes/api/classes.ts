@@ -1,7 +1,7 @@
 import * as ClassController from "../../controllers/class";
 import express from "express";
 
-const router = express();
+const router = express.Router();
 
 /**
  * @swagger

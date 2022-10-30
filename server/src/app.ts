@@ -9,6 +9,7 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
 import swaggerSchemas from "./config/swagger-schemas";
 import serverless from 'serverless-http';
+import {createServer} from "http";
 
 const swaggerDefinition = {
   openapi: '3.0.0',
@@ -60,17 +61,14 @@ app.use(cors({origin: true, credentials: true}));
 app.use(express.json());
 
 // use routes
-app.use('/api/users', users);
-app.use('/api/classes', classes)
+app.use('/.netlify/functions/app/users', users);  // path must route to lambda
+app.use('/.netlify/functions/app/classes', classes);  // path must route to lambda
+app.get('/.netlify/functions/app/test', (req, res) => res.send('Hello world!'));
 
-app.use('/.netlify/functions/server/users', users);  // path must route to lambda
-app.use('/.netlify/functions/server/classes', classes);  // path must route to lambda
+// const port = process.env.PORT || 8082;
+// const server = app.listen(port, () => console.log(`Server running on port ${port}`));
 
-app.get('/api/test', (req, res) => res.send('Hello world!'));
-
-const port = process.env.PORT || 8082;
-
-const server = app.listen(port, () => console.log(`Server running on port ${port}`));
+const server = createServer(app);
 
 const io = AudentricSocket.getInstance(server);
 
@@ -78,5 +76,8 @@ io.on("connection", (socket: Socket) => {
   console.log("Client connected");
 });
 
-module.exports.handler = serverless(app);
-
+const handler = serverless(app);
+module.exports.handler = async (event:any, context:any) => {
+  const result = await handler(event, context);
+  return result;
+};

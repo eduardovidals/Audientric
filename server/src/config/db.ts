@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
+import dotenv from 'dotenv'
+dotenv.config();
 
-const db: string = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.6xrih.mongodb.net/${process.env.MONGO_DB}?retryWrites=true&w=majority`;
+const db = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.6xrih.mongodb.net/${process.env.MONGO_DB}?retryWrites=true&w=majority`;
 
 const connectDB = async () => {
   try {

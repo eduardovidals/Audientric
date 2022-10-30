@@ -1,7 +1,7 @@
 import express from "express";
 import * as UserController from '../../controllers/user';
 
-const router = express();
+const router = express.Router();
 
 /**
  * @swagger
