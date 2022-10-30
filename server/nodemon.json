@@ -1,7 +1,0 @@
-{
-  "env": {
-    "MONGO_USER": "baldder",
-    "MONGO_PASSWORD": "PFax8QsAsu3A6VR5",
-    "MONGO_DB": "audientric"
-  }
-}

@@ -61,14 +61,12 @@ app.use(cors({origin: true, credentials: true}));
 app.use(express.json());
 
 // use routes
-app.use('/.netlify/functions/app/users', users);  // path must route to lambda
-app.use('/.netlify/functions/app/classes', classes);  // path must route to lambda
-app.get('/.netlify/functions/app/test', (req, res) => res.send('Hello world!'));
+app.use('/.netlify/functions/api/users', users);  // path must route to lambda
+app.use('/.netlify/functions/api/classes', classes);  // path must route to lambda
+app.get('/.netlify/functions/api', (req, res) => res.send('Hello world!'));
 
-// const port = process.env.PORT || 8082;
-// const server = app.listen(port, () => console.log(`Server running on port ${port}`));
-
-const server = createServer(app);
+const port = process.env.PORT || 8082;
+const server = app.listen(port, () => console.log(`Server running on port ${port}`));
 
 const io = AudentricSocket.getInstance(server);
 

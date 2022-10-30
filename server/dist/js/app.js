@@ -22,7 +22,6 @@ const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const swagger_schemas_1 = __importDefault(require("./config/swagger-schemas"));
 const serverless_http_1 = __importDefault(require("serverless-http"));
-const http_1 = require("http");
 const swaggerDefinition = {
     openapi: '3.0.0',
     info: {
@@ -64,12 +63,11 @@ app.use((0, cors_1.default)({ origin: true, credentials: true }));
 // init middleware
 app.use(express_1.default.json());
 // use routes
-app.use('/.netlify/functions/app/users', users_1.default); // path must route to lambda
-app.use('/.netlify/functions/app/classes', classes_1.default); // path must route to lambda
-app.get('/.netlify/functions/app/test', (req, res) => res.send('Hello world!'));
-// const port = process.env.PORT || 8082;
-// const server = app.listen(port, () => console.log(`Server running on port ${port}`));
-const server = (0, http_1.createServer)(app);
+app.use('/.netlify/functions/api/users', users_1.default); // path must route to lambda
+app.use('/.netlify/functions/api/classes', classes_1.default); // path must route to lambda
+app.get('/.netlify/functions/api', (req, res) => res.send('Hello world!'));
+const port = process.env.PORT || 8082;
+const server = app.listen(port, () => console.log(`Server running on port ${port}`));
 const io = socket_1.default.getInstance(server);
 io.on("connection", (socket) => {
     console.log("Client connected");
