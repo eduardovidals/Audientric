@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -22,6 +13,7 @@ const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const swagger_schemas_1 = __importDefault(require("./config/swagger-schemas"));
 const serverless_http_1 = __importDefault(require("serverless-http"));
+const http_1 = require("http");
 const swaggerDefinition = {
     openapi: '3.0.0',
     info: {
@@ -60,22 +52,19 @@ const app = (0, express_1.default)();
 app.use('/docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerSpec));
 // cors
 app.use((0, cors_1.default)({
-    origin: '*'
+    origin: ["http://localhost:3000", "https://audientric.netlify.app"],
 }));
 // init middleware
 app.use(express_1.default.json());
 // use routes
-app.use('/.netlify/functions/api/users', users_1.default); // path must route to lambda
-app.use('/.netlify/functions/api/classes', classes_1.default); // path must route to lambda
-app.get('/.netlify/functions/api', (req, res) => res.send('Hello world!'));
-const port = process.env.PORT || 8082;
-const server = app.listen(port, () => console.log(`Server running on port ${port}`));
+app.use('/.netlify/functions/app/api/users', users_1.default); // path must route to lambda
+app.use('/.netlify/functions/app/api/classes', classes_1.default); // path must route to lambda
+app.get('/.netlify/functions/app/api', (req, res) => res.send('Hello world!'));
+// const port = process.env.PORT || 9000;
+// const server = app.listen(port, () => console.log(`Server running on port ${port}`));
+const server = new http_1.Server(app);
 const io = socket_1.default.getInstance(server);
 io.on("connection", (socket) => {
     console.log("Client connected");
 });
-const handler = (0, serverless_http_1.default)(app);
-module.exports.handler = (event, context) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield handler(event, context);
-    return result;
-});
+module.exports.handler = (0, serverless_http_1.default)(app);

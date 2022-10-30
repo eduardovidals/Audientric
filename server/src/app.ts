@@ -9,6 +9,7 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
 import swaggerSchemas from "./config/swagger-schemas";
 import serverless from 'serverless-http';
+import {Server} from "http";
 
 const swaggerDefinition = {
   openapi: '3.0.0',
@@ -55,19 +56,21 @@ app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 // cors
 app.use(cors({
-  origin: '*'
+  origin: ["http://localhost:3000", "https://audientric.netlify.app"],
 }));
 
 // init middleware
 app.use(express.json());
 
 // use routes
-app.use('/.netlify/functions/api/users', users);  // path must route to lambda
-app.use('/.netlify/functions/api/classes', classes);  // path must route to lambda
-app.get('/.netlify/functions/api', (req, res) => res.send('Hello world!'));
+app.use('/.netlify/functions/app/api/users', users);  // path must route to lambda
+app.use('/.netlify/functions/app/api/classes', classes);  // path must route to lambda
+app.get('/.netlify/functions/app/api', (req, res) => res.send('Hello world!'));
 
-const port = process.env.PORT || 8082;
-const server = app.listen(port, () => console.log(`Server running on port ${port}`));
+// const port = process.env.PORT || 9000;
+// const server = app.listen(port, () => console.log(`Server running on port ${port}`));
+
+const server = new Server(app);
 
 const io = AudentricSocket.getInstance(server);
 
@@ -75,8 +78,4 @@ io.on("connection", (socket: Socket) => {
   console.log("Client connected");
 });
 
-const handler = serverless(app);
-module.exports.handler = async (event: any, context: any) => {
-  const result = await handler(event, context);
-  return result;
-};
+module.exports.handler = serverless(app);
