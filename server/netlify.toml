@@ -1,6 +1,0 @@
-[build]
-    functions = "functions"
-[dev]
-    functions = "functions"
-    publish = "dist/js"
-    port = 9200
