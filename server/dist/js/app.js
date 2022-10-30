@@ -39,7 +39,7 @@ const swaggerDefinition = {
     },
     servers: [
         {
-            url: 'http://localhost:8082/api',
+            url: 'http://localhost:8082/.netlify/functions/api',
             description: 'Development server',
         },
     ],
@@ -59,7 +59,9 @@ const app = (0, express_1.default)();
 // swagger ui
 app.use('/docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerSpec));
 // cors
-app.use((0, cors_1.default)({ origin: true, credentials: true }));
+app.use((0, cors_1.default)({
+    origin: ["http://localhost:3000", "https://audientric.netlify.app"]
+}));
 // init middleware
 app.use(express_1.default.json());
 // use routes

@@ -9,7 +9,6 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
 import swaggerSchemas from "./config/swagger-schemas";
 import serverless from 'serverless-http';
-import {createServer} from "http";
 
 const swaggerDefinition = {
   openapi: '3.0.0',
@@ -29,7 +28,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: 'http://localhost:8082/api',
+      url: 'http://localhost:8082/.netlify/functions/api',
       description: 'Development server',
     },
   ],
@@ -55,7 +54,9 @@ connectDB();
 app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 // cors
-app.use(cors({origin: true, credentials: true}));
+app.use(cors({
+  origin: ["http://localhost:3000", "https://audientric.netlify.app"]
+}));
 
 // init middleware
 app.use(express.json());
@@ -75,7 +76,7 @@ io.on("connection", (socket: Socket) => {
 });
 
 const handler = serverless(app);
-module.exports.handler = async (event:any, context:any) => {
+module.exports.handler = async (event: any, context: any) => {
   const result = await handler(event, context);
   return result;
 };
