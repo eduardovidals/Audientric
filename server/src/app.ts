@@ -55,7 +55,7 @@ app.use('/docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 // cors
 app.use(cors({
-  origin: ["http://localhost:3000", "https://audientric.netlify.app"]
+  origin: '*'
 }));
 
 // init middleware
