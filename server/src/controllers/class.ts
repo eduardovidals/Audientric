@@ -42,7 +42,7 @@ export const getClassUsers = async (req: Request, res: Response, next: NextFunct
     .catch(e => {
       return res.status(404).send({
         error: e.message,
-        message: 'Unable to get a user from the list.'
+        message: 'Unable to join class.'
       });
     });
 }
@@ -52,30 +52,6 @@ export const updateStatus = async (req: Request, res: Response, next: NextFuncti
   const {status} = req.body;
 
   const classObj = await Class.findByIdAndUpdate(classId, {status}, {new: true});
-
-  if (!classObj) throw Error("Class does not exist.");
-
-  if (status === 'initial') {
-    User.updateMany({"_id": {$in: classObj.users}}, {$set: {status: 'initial'}}, {new: true})
-      .sort({updatedAt: -1})
-      .then(users => res.json(users))
-      .catch(e => {
-        return res.status(404).send({
-          error: e.message,
-          message: 'Unable to get a user from the list.'
-        });
-      });
-  } else {
-    User.find({"_id": {$in: classObj.users}}, {new: true})
-      .sort({updatedAt: -1})
-      .then(users => res.json(users))
-      .catch(e => {
-        return res.status(404).send({
-          error: e.message,
-          message: 'Unable to get a user from the list.'
-        });
-      });
-  }
 
   AudentricSocket.getInstance().emit("class event", {
     action: "status",
