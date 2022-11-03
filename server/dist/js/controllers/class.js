@@ -64,15 +64,28 @@ const updateStatus = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
     const classObj = yield class_1.default.findByIdAndUpdate(classId, { status }, { new: true });
     if (!classObj)
         throw Error("Class does not exist.");
-    user_1.default.updateMany({ "_id": { $in: classObj.users } }, { $set: { status: 'initial' } }, { new: true })
-        .sort({ updatedAt: -1 })
-        .then(users => res.json(users))
-        .catch(e => {
-        return res.status(404).send({
-            error: e.message,
-            message: 'Unable to get a user from the list.'
+    if (status === 'initial') {
+        user_1.default.updateMany({ "_id": { $in: classObj.users } }, { $set: { status: 'initial' } }, { new: true })
+            .sort({ updatedAt: -1 })
+            .then(users => res.json(users))
+            .catch(e => {
+            return res.status(404).send({
+                error: e.message,
+                message: 'Unable to get a user from the list.'
+            });
         });
-    });
+    }
+    else {
+        user_1.default.find({ "_id": { $in: classObj.users } }, { new: true })
+            .sort({ updatedAt: -1 })
+            .then(users => res.json(users))
+            .catch(e => {
+            return res.status(404).send({
+                error: e.message,
+                message: 'Unable to get a user from the list.'
+            });
+        });
+    }
     socket_1.default.getInstance().emit("class event", {
         action: "status",
         status
