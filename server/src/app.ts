@@ -29,7 +29,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: 'http://localhost:8082/.netlify/functions/api',
+      url: 'http://localhost:8082/api',
       description: 'Development server',
     },
   ],

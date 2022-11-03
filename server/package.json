@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "node dist/js/app.js",
+    "start": "nodemon dist/js/app.js",
     "build:dev": "tsc",
     "start:dev": "concurrently \"tsc -w\" \"nodemon dist/js/app.js\"",
     "start:server": "netlify-lambda serve dist/js",
