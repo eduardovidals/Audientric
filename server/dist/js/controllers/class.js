@@ -53,7 +53,7 @@ const getClassUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, func
         .catch(e => {
         return res.status(404).send({
             error: e.message,
-            message: 'Unable to get a user from the list.'
+            message: 'Unable to join class.'
         });
     });
 });
@@ -62,27 +62,13 @@ const updateStatus = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
     const { classId } = req.params;
     const { status } = req.body;
     const classObj = yield class_1.default.findByIdAndUpdate(classId, { status }, { new: true });
-    if (!classObj)
-        throw Error("Class does not exist.");
     if (status === 'initial') {
-        user_1.default.updateMany({ "_id": { $in: classObj.users } }, { $set: { status: 'initial' } }, { new: true })
-            .sort({ updatedAt: -1 })
+        yield user_1.default.find({ "_id": { $in: classObj.users } }, { $in: true }).sort({ updatedAt: -1 })
             .then(users => res.json(users))
             .catch(e => {
             return res.status(404).send({
                 error: e.message,
-                message: 'Unable to get a user from the list.'
-            });
-        });
-    }
-    else {
-        user_1.default.find({ "_id": { $in: classObj.users } }, { new: true })
-            .sort({ updatedAt: -1 })
-            .then(users => res.json(users))
-            .catch(e => {
-            return res.status(404).send({
-                error: e.message,
-                message: 'Unable to get a user from the list.'
+                message: 'Unable to join class.'
             });
         });
     }

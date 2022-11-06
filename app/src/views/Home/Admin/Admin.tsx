@@ -81,10 +81,6 @@ function Admin() {
         user.id = user._id;
         setUsers((prevUsers) => [user, ...prevUsers]);
       }
-
-      if (data.action === "initial"){
-        getUsers();
-      }
     });
 
     socket.on("user event", async (data) => {
