@@ -2,7 +2,7 @@ import {DataGrid, GridColDef, GridToolbar} from "@mui/x-data-grid"
 import Loading from "components/common/Loading/Loading";
 import Main from "components/layout/Main/Main";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {Button, Dialog, LinearProgress, TextField} from "@mui/material";
+import {Button, Dialog, LinearProgress, TextField, useMediaQuery, useTheme} from "@mui/material";
 import {
   AdminContainer,
   AdminStartClassContainer,
@@ -93,6 +93,8 @@ function Admin() {
   const [task, setTask] = useState("");
   const [loading, setLoading] = useState(true);
   const [showUpdateTaskDialog, setShowUpdateTaskDialog] = useState(false);
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const createSocketConnection = () => {
     const socket = openSocket(process.env.REACT_APP_API_URL as string);
@@ -172,7 +174,7 @@ function Admin() {
       </div>
 
       <Dialog open={showUpdateTaskDialog} onClose={() => setShowUpdateTaskDialog(false)} fullWidth={true}
-              maxWidth={'lg'}>
+              maxWidth={'lg'} fullScreen={fullScreen}>
         <AdminUpdateTaskContainer>
           <FontAwesomeContainer icon={['fas', 'xmark']} onClick={() => setShowUpdateTaskDialog(false)}/>
           <IssueText> Please describe your task. </IssueText>

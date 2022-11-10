@@ -5,12 +5,6 @@ import {ColorProps} from "views/Home/Home.styles";
 import AudentricButton from "components/lib/Button/AudentricButton";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
-export const TaskText = styled.h1`
-  font-size: 1.5rem;
-  text-align: center;
-  margin: 0 10px;
-`
-
 export const ActiveClassContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -18,6 +12,19 @@ export const ActiveClassContainer = styled.div`
   height: 100%;
   justify-content: center;
   align-items: center;
+  padding: 20px 0;
+  word-break: break-word;
+`
+
+export const TaskText = styled.h1`
+  font-size: 1.5rem;
+  text-align: center;
+  margin: 0 10px;
+`
+
+export const OdometerText = styled.p`
+  text-align: center;
+  margin: 0 10px;
 `
 
 export const OptionsButton = muiStyles.styled(AudentricButton, {
@@ -30,11 +37,9 @@ export const OptionsButton = muiStyles.styled(AudentricButton, {
     opacity: 0.8
   },
   marginTop: 10,
-  paddingTop: 8,
-  paddingBottom: 8,
-  height: 200,
-  width: 200,
-  fontSize: '5rem',
+  height: 135,
+  width: 135,
+  fontSize: '3rem',
   borderRadius: 10
 }))
 

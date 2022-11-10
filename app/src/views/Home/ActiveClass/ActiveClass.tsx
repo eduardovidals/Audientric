@@ -2,13 +2,13 @@ import {
   ActiveClassContainer,
   FontAwesomeContainer,
   IssueContainer,
-  IssueText,
+  IssueText, OdometerText,
   OptionsButton,
   TaskText,
 } from "views/Home/ActiveClass/ActiveClass.styles";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import * as UserServiceApi from 'apis/UserServiceApi';
-import {Button, Dialog, TextField} from "@mui/material";
+import {Button, Dialog, TextField, useMediaQuery, useTheme} from "@mui/material";
 import {useEffect, useState} from "react";
 import * as ClassServiceApi from "apis/ClassServiceApi";
 import openSocket from "socket.io-client";
@@ -25,6 +25,8 @@ function ActiveClass() {
   const [issue, setIssue] = useState('');
   const [answer, setAnswer] = useState('');
   const userId = localStorage.getItem('audientricUserId') || '';
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const onStatusChange = async (status: string) => {
     await UserServiceApi.updateStatus({userId, status})
@@ -73,11 +75,19 @@ function ActiveClass() {
   return (
     <ActiveClassContainer>
       <TaskText> {task} </TaskText>
-      <p> Total users: <Odometer value={users.length}/></p>
-      <p><Odometer value={users.filter(user => user.status === 'done').length}/> users done. </p>
-      <p><Odometer value={users.filter(user => user.status === 'issue').length}/> users having issues. </p>
-      <p><Odometer value={users.filter(user => user.status === 'initial').length}/> users doing the task. </p>
-      <Dialog open={showIssueDialog} onClose={() => setShowIssueDialog(false)} fullWidth={true} maxWidth={'lg'}>
+      <OdometerText>
+        Total users: <Odometer value={users.length}/>
+      </OdometerText>
+      <OdometerText>
+        <Odometer value={users.filter(user => user.status === 'done').length}/> users done.
+      </OdometerText>
+      <OdometerText>
+        <Odometer value={users.filter(user => user.status === 'issue').length}/> users having issues.
+      </OdometerText>
+      <OdometerText>
+        <Odometer value={users.filter(user => user.status === 'initial').length}/> users doing the task.
+      </OdometerText>
+      <Dialog open={showIssueDialog} onClose={() => setShowIssueDialog(false)} fullWidth={true} maxWidth={'lg'} fullScreen={fullScreen}>
         <IssueContainer>
           <FontAwesomeContainer icon={['fas', 'xmark']} onClick={() => setShowIssueDialog(false)}/>
           <IssueText> Please describe your issue. </IssueText>
@@ -105,7 +115,7 @@ function ActiveClass() {
         </IssueContainer>
       </Dialog>
 
-      <Dialog open={showAnswerDialog} onClose={() => setShowAnswerDialog(false)} fullWidth={true} maxWidth={'lg'}>
+      <Dialog open={showAnswerDialog} onClose={() => setShowAnswerDialog(false)} fullWidth={true} maxWidth={'lg'} fullScreen={fullScreen}>
         <IssueContainer>
           <FontAwesomeContainer icon={['fas', 'xmark']} onClick={() => setShowAnswerDialog(false)}/>
           <IssueText> Please type your answer. </IssueText>
