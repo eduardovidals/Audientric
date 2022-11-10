@@ -26,28 +26,28 @@ function Welcome() {
 
   const dispatch = useAppDispatch();
 
+  const getUsers = async () => {
+    const classObj = await ClassServiceApi.getClassById({classId: '6359407d47773e1371ff8cec'});
+
+    if (classObj.status === "started") {
+      dispatch(updateHomeScreen("ActiveClassScreen"));
+    }
+
+    setUsers(classObj.users);
+    setLoading(false);
+  }
+
   const createSocketConnection = () => {
     const socket = openSocket(process.env.REACT_APP_API_URL as string);
     socket.on("class event", data => {
       if (data.action === "join") {
-        setUsers(prevUsers => [data.user, ...prevUsers]);
+        getUsers();
       }
     });
   };
 
   useEffect(() => {
     Aos.init();
-
-    const getUsers = async () => {
-      const classObj = await ClassServiceApi.getClassById({classId: '6359407d47773e1371ff8cec'});
-
-      if (classObj.status === "started") {
-        dispatch(updateHomeScreen("ActiveClassScreen"));
-      }
-
-      setUsers(classObj.users);
-      setLoading(false);
-    }
 
     getUsers();
     createSocketConnection();
