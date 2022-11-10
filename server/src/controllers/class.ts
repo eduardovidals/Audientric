@@ -47,47 +47,92 @@ export const getClassUsers = async (req: Request, res: Response, next: NextFunct
     });
 }
 
+export const updateTask = async (req: Request, res: Response, next: NextFunction) => {
+  const {classId} = req.params;
+  const {task} = req.body;
+
+  Class.findByIdAndUpdate(classId, {task}, {new: true, runValidators: true})
+    .then(async classObj => {
+      await User.updateMany({
+        '_id': {
+          $in: classObj?.users
+        }
+      }, {status: 'initial', issues: []}, {new: true, runValidators: true});
+
+      AudentricSocket.getInstance().emit("class event", {
+        action: "updateTask",
+        task
+      });
+
+      AudentricSocket.getInstance().emit("class event", {
+        action: "status",
+        status: "initial"
+      });
+
+      return res.json(classObj);
+    })
+    .catch(e => {
+      return res.status(404).send({
+        error: e.message,
+        message: 'Unable to update class task.'
+      });
+    });
+}
+
 export const updateStatus = async (req: Request, res: Response, next: NextFunction) => {
   const {classId} = req.params;
   const {status} = req.body;
 
-  const classObj = await Class.findByIdAndUpdate(classId, {status}, {new: true});
+  Class.findById(classId, {}, {runValidators: true})
+    .then(classObj => {
+      if (!classObj) {
+        throw Error('Class cannot be found.');
+      }
 
-  AudentricSocket.getInstance().emit("class event", {
-    action: "status",
-    status
-  });
+      if (!classObj.task && status === "started") {
+        throw Error('Class must have a task before it can be started.');
+      }
 
-  return res.json(classObj)
+      classObj.status = status;
+
+      AudentricSocket.getInstance().emit("class event", {
+        action: "status",
+        status
+      });
+
+      classObj.save().then(() => {
+        return res.json(classObj);
+      })
+
+
+    })
+    .catch(e => {
+      return res.status(404).send({
+        error: e.message,
+        message: 'Unable to update class status.'
+      });
+    });
 };
 
 export const joinClass = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const {classId} = req.params;
-    const {userId} = req.body;
+  const {classId} = req.params;
+  const {userId} = req.body;
 
-    const user = await User.findById(userId);
+  const user = await User.findById(userId);
 
-    if (!user) {
-      new Error('User cannot be found.');
+  if (!user) throw Error('User cannot be found.');
+
+
+  const classObj = await Class.findByIdAndUpdate(classId, {
+    $push: {
+      "users": Types.ObjectId(user?._id)
     }
+  }, {new: true});
 
-    const classObj = await Class.findByIdAndUpdate(classId, {
-      $push: {
-        "users": Types.ObjectId(user?._id)
-      }
-    }, {new: true});
+  AudentricSocket.getInstance().emit("class event", {
+    action: "join",
+    user
+  });
 
-    AudentricSocket.getInstance().emit("class event", {
-      action: "join",
-      user
-    });
-
-    return res.json(classObj);
-  } catch (e: any) {
-    return res.status(404).send({
-      error: e.message,
-      message: 'Unable to join class.'
-    });
-  }
+  return res.json(classObj);
 }

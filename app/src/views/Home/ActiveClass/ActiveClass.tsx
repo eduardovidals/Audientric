@@ -3,7 +3,7 @@ import {
   FontAwesomeContainer,
   IssueContainer,
   IssueText,
-  OptionsButton,
+  OptionsButton, TaskText,
 } from "views/Home/ActiveClass/ActiveClass.styles";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import * as UserServiceApi from 'apis/UserServiceApi';
@@ -17,7 +17,9 @@ import 'assets/styles/odometer.css';
 
 function ActiveClass() {
   const [users, setUsers] = useState<any[]>([]);
+  const [task, setTask] = useState("");
   const [showIssueDialog, setShowIssueDialog] = useState(false);
+  const [onIssueSubmit, setOnIssuesSubmit] = useState(true);
   const [issue, setIssue] = useState('');
   const userId = localStorage.getItem('audientricUserId') || '';
 
@@ -27,6 +29,12 @@ function ActiveClass() {
 
   const createSocketConnection = () => {
     const socket = openSocket(process.env.REACT_APP_API_URL as string);
+
+    socket.on('class event', async (data) => {
+      if (data.action === "updateStatus"){
+        setTask(data.task);
+      }
+    })
 
     socket.on("user event", async (data) => {
       switch (data.action) {
@@ -42,6 +50,11 @@ function ActiveClass() {
     });
   };
 
+  const getClass = async () => {
+    const classObj = await ClassServiceApi.getClassById({classId: "6359407d47773e1371ff8cec"});
+    setTask(classObj.task);
+  }
+
   const getUsers = async () => {
     const users = await ClassServiceApi.getUsersByClassId({classId: "6359407d47773e1371ff8cec"});
     const newUsers = users.map((user: any) => ({...user, id: user._id}));
@@ -49,12 +62,14 @@ function ActiveClass() {
   }
 
   useEffect(() => {
+    getClass();
     getUsers();
     createSocketConnection();
   }, [])
 
   return (
     <ActiveClassContainer>
+      <TaskText> {task} </TaskText>
       <p> Total users: <Odometer value={users.length}/> </p>
       <p> <Odometer value={users.filter(user => user.status === 'done').length}/> users done. </p>
       <p> <Odometer value={users.filter(user => user.status === 'issue').length}/>  users having issues. </p>
@@ -73,7 +88,7 @@ function ActiveClass() {
             }}
           />
 
-          <Button variant={'contained'} sx={{marginTop: '15px'}} onClick={async () => {
+          <Button variant={'contained'} sx={{marginTop: '15px'}} disabled={!showIssueDialog} onClick={async () => {
             await UserServiceApi.updateIssues({
               userId: localStorage.getItem('audientricUserId') || '',
               issue

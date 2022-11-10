@@ -46,7 +46,7 @@ const router = express_1.default.Router();
  *               items:
  *                 $ref: '#/components/schemas/user'
  */
-router.get('/', UserController.getUsers);
+router.get('', UserController.getUsers);
 /**
  * @swagger
  * /users:
@@ -75,7 +75,7 @@ router.get('/', UserController.getUsers);
  *               type: object
  *               $ref: '#/components/schemas/user'
  */
-router.post("/", UserController.createUser);
+router.post('', UserController.createUser);
 /**
  * @swagger
  * /users/{userId}:

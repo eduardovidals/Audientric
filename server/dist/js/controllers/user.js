@@ -64,7 +64,7 @@ exports.deleteUser = deleteUser;
 const updateStatus = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { userId } = req.params;
     const { status } = req.body;
-    user_1.default.findByIdAndUpdate(userId, { status, updatedAt: new Date(new Date().toISOString()) }, { new: true })
+    user_1.default.findByIdAndUpdate(userId, { status, updatedAt: new Date(new Date().toISOString()) }, { new: true, runValidators: true })
         .then(user => {
         socket_1.default.getInstance().emit("user event", {
             action: "updateStatus",

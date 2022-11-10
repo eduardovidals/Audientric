@@ -10,7 +10,7 @@ export interface User extends Document {
 const UserSchema = new Schema({
   fullName: {type: String, required: true},
   issues: {type: [String], default: []},
-  status: {type: String, default: 'initial'},
+  status: {type: String, default: 'initial', enum: ['initial', 'done', 'issue']},
   updatedAt: {type: Date}
 });
 

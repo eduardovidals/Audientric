@@ -111,6 +111,41 @@ router.get('/:classId', ClassController.getClassById);
 router.get('/:classId/users', ClassController.getClassUsers);
 /**
  * @swagger
+ * /classes/{classId}/task:
+ *   put:
+ *     summary: Change the task of a class.
+ *     description: Changes the task of the class with the specified classId.
+ *     tags: [Classes]
+ *     parameters:
+ *       - in: path
+ *         name: classId
+ *         required: true
+ *         description: id of the class to be changed
+ *         schema:
+ *          type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               task:
+ *                 type: string
+ *                 required: true
+ *                 description: the status of the class
+ *     responses:
+ *       200:
+ *         description: The updated class.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               $ref: '#/components/schemas/class'
+ */
+router.put('/:classId/task', ClassController.updateTask);
+/**
+ * @swagger
  * /classes/{classId}/status:
  *   put:
  *     summary: Change the status of a class.
@@ -133,7 +168,7 @@ router.get('/:classId/users', ClassController.getClassUsers);
  *               status:
  *                 type: string
  *                 required: true
- *                 description: the status of the user
+ *                 description: the status of the class
  *                 enum: [initial, started, ended]
  *     responses:
  *       200:

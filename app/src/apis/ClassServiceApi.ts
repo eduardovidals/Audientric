@@ -13,6 +13,11 @@ export const getClassById = (data: { classId: string }) =>
 export const getUsersByClassId = (data: { classId: string }) =>
   api.get(`/${data.classId}/users`).then(res => res.data)
 
+export const updateTask = (data: { classId: string, task: string }) => {
+  const {classId, ...rest} = data;
+  return api.put(`/${classId || ''}/task`, rest).then(res => res.data);
+}
+
 export const updateStatus = (data: { classId: string, status: string }) => {
   const {classId, ...rest} = data;
   return api.put(`/${classId || ''}/status`, rest).then(res => res.data);

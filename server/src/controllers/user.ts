@@ -55,7 +55,7 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
 export const updateStatus = async (req: Request, res: Response, next: NextFunction) => {
   const {userId} = req.params;
   const {status} = req.body
-  User.findByIdAndUpdate(userId, {status, updatedAt: new Date(new Date().toISOString())}, {new: true})
+  User.findByIdAndUpdate(userId, {status, updatedAt: new Date(new Date().toISOString())}, {new: true, runValidators: true})
     .then(user => {
       AudentricSocket.getInstance().emit("user event", {
         action: "updateStatus",

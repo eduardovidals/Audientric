@@ -5,6 +5,12 @@ import {ColorProps} from "views/Home/Home.styles";
 import AudentricButton from "components/lib/Button/AudentricButton";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
+export const TaskText = styled.h1`
+  font-size: 1.5rem;
+  text-align: center;
+  margin: 0 10px;
+`
+
 export const ActiveClassContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -39,6 +45,10 @@ export const FontAwesomeContainer = styled(FontAwesomeIcon)`
   align-self: flex-start;
   font-size: 1.8rem;
   text-align: left;
+  
+  &:hover {
+    cursor: pointer;
+  }
 `
 
 export const IssueContainer = styled.div`

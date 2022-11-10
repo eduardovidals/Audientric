@@ -1,19 +1,23 @@
 import {DataGrid, GridColDef, GridToolbar} from "@mui/x-data-grid"
-import Box from "@mui/material/Box"
 import Loading from "components/common/Loading/Loading";
 import Main from "components/layout/Main/Main";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {Button, LinearProgress} from "@mui/material";
+import {Button, Dialog, LinearProgress, TextField} from "@mui/material";
 import {
+  AdminContainer,
   AdminStartClassContainer,
+  AdminUpdateTaskContainer,
   AdminUserIssue,
   AdminUserIssueList,
-  AdminUserIssueText
+  AdminUserIssueText,
+  FontAwesomeContainer
 } from "views/Home/Admin/Admin.styles";
 import {IconContainer} from "./Admin.styles";
 import * as ClassServiceApi from "apis/ClassServiceApi";
 import openSocket from "socket.io-client";
 import {useEffect, useState} from "react";
+import {IssueText} from "views/Home/ActiveClass/ActiveClass.styles";
+import * as UserServiceApi from "apis/UserServiceApi";
 
 function renderStatus(params: any) {
   switch (params.row.status) {
@@ -70,7 +74,9 @@ const columns: GridColDef[] = [
 
 function Admin() {
   const [users, setUsers] = useState<any[]>([]);
+  const [task, setTask] = useState("");
   const [loading, setLoading] = useState(true);
+  const [showUpdateTaskDialog, setShowUpdateTaskDialog] = useState(false);
 
   const createSocketConnection = () => {
     const socket = openSocket(process.env.REACT_APP_API_URL as string);
@@ -83,16 +89,22 @@ function Admin() {
       }
     });
 
+    socket.on("class event", async (data) => {
+      switch (data.action) {
+        case "updateTask":
+          getUsers();
+          break;
+      }
+    });
+
     socket.on("user event", async (data) => {
       switch (data.action) {
-        case "updateIssue":
+        case "updateIssues":
           getUsers();
           break;
         case "updateStatus":
           getUsers();
           break;
-        default:
-          getUsers();
       }
     });
   };
@@ -123,22 +135,50 @@ function Admin() {
   }
 
   return (
-    <Box sx={{height: 400, width: '100%', padding: "2rem"}}>
-      <DataGrid
-        sx={{backgroundColor: "white"}}
-        rows={users}
-        columns={columns}
-        pageSize={10}
-        rowsPerPageOptions={[10]}
-        checkboxSelection
-        disableSelectionOnClick
-        experimentalFeatures={{newEditingApi: true}}
-        components={{
-          Toolbar: GridToolbar,
-          LoadingOverlay: LinearProgress
-        }}
-        getRowHeight={() => 'auto'}
-      />
+    <AdminContainer>
+      <div style={{display: 'flex', flexGrow: 1}}>
+        <DataGrid
+          sx={{backgroundColor: "white"}}
+          rows={users}
+          columns={columns}
+          rowsPerPageOptions={[20]}
+          checkboxSelection
+          disableSelectionOnClick
+          components={{
+            Toolbar: GridToolbar,
+            LoadingOverlay: LinearProgress
+          }}
+          getRowHeight={() => 'auto'}
+        />
+      </div>
+
+      <Dialog open={showUpdateTaskDialog} onClose={() => setShowUpdateTaskDialog(false)} fullWidth={true}
+              maxWidth={'lg'}>
+        <AdminUpdateTaskContainer>
+          <FontAwesomeContainer icon={['fas', 'xmark']} onClick={() => setShowUpdateTaskDialog(false)}/>
+          <IssueText> Please describe your task. </IssueText>
+          <TextField
+            label="What is your task?"
+            multiline
+            rows={8}
+            placeholder="Please type your task..." style={{width: '100%', marginTop: 20}}
+            onChange={(e) => {
+              setTask(e.currentTarget.value);
+            }}
+          />
+
+          <Button variant={'contained'} sx={{marginTop: '15px'}} onClick={async () => {
+            await ClassServiceApi.updateTask({
+              classId: "6359407d47773e1371ff8cec",
+              task
+            })
+            setShowUpdateTaskDialog(false);
+          }}>
+            Submit Task
+          </Button>
+        </AdminUpdateTaskContainer>
+      </Dialog>
+
 
       <AdminStartClassContainer>
         <Button variant={'contained'} onClick={() => updateClassStatus('started')}>
@@ -148,8 +188,12 @@ function Admin() {
         <Button variant={'contained'} onClick={() => updateClassStatus('initial')}>
           Reset Class
         </Button>
+
+        <Button variant={'contained'} onClick={() => setShowUpdateTaskDialog(true)}>
+          New Task
+        </Button>
       </AdminStartClassContainer>
-    </Box>
+    </AdminContainer>
   )
 }
 
