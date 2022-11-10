@@ -64,11 +64,6 @@ export const updateTask = async (req: Request, res: Response, next: NextFunction
         task
       });
 
-      AudentricSocket.getInstance().emit("class event", {
-        action: "status",
-        status: "initial"
-      });
-
       return res.json(classObj);
     })
     .catch(e => {

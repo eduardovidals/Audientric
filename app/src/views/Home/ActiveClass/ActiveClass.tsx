@@ -36,7 +36,7 @@ function ActiveClass() {
     const socket = openSocket(process.env.REACT_APP_API_URL as string);
 
     socket.on('class event', async (data) => {
-      if (data.action === "updateStatus") {
+      if (data.action === "updateTask") {
         setTask(data.task);
       }
     })

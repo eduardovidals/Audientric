@@ -72,10 +72,6 @@ const updateTask = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
             action: "updateTask",
             task
         });
-        socket_1.default.getInstance().emit("class event", {
-            action: "status",
-            status: "initial"
-        });
         return res.json(classObj);
     }))
         .catch(e => {

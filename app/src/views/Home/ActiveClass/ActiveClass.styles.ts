@@ -22,7 +22,7 @@ export const TaskText = styled.h1`
   margin: 0 10px;
 `
 
-export const OdometerText = styled.p`
+export const OdometerText = styled.div`
   text-align: center;
   margin: 0 10px;
 `
