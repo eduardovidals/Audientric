@@ -38,6 +38,7 @@ function ActiveClass() {
     socket.on('class event', async (data) => {
       if (data.action === "updateTask") {
         setTask(data.task);
+        getUsers();
       }
     })
 
