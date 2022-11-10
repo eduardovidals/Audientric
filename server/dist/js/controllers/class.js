@@ -67,7 +67,7 @@ const updateTask = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
             '_id': {
                 $in: classObj === null || classObj === void 0 ? void 0 : classObj.users
             }
-        }, { status: 'initial', issues: [] }, { new: true, runValidators: true });
+        }, { status: 'initial', issues: [], answers: [] }, { new: true, runValidators: true });
         socket_1.default.getInstance().emit("class event", {
             action: "updateTask",
             task

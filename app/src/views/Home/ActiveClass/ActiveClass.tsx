@@ -3,7 +3,8 @@ import {
   FontAwesomeContainer,
   IssueContainer,
   IssueText,
-  OptionsButton, TaskText,
+  OptionsButton,
+  TaskText,
 } from "views/Home/ActiveClass/ActiveClass.styles";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import * as UserServiceApi from 'apis/UserServiceApi';
@@ -19,8 +20,10 @@ function ActiveClass() {
   const [users, setUsers] = useState<any[]>([]);
   const [task, setTask] = useState("");
   const [showIssueDialog, setShowIssueDialog] = useState(false);
+  const [showAnswerDialog, setShowAnswerDialog] = useState(false);
   const [onIssueSubmit, setOnIssuesSubmit] = useState(true);
   const [issue, setIssue] = useState('');
+  const [answer, setAnswer] = useState('');
   const userId = localStorage.getItem('audientricUserId') || '';
 
   const onStatusChange = async (status: string) => {
@@ -31,7 +34,7 @@ function ActiveClass() {
     const socket = openSocket(process.env.REACT_APP_API_URL as string);
 
     socket.on('class event', async (data) => {
-      if (data.action === "updateStatus"){
+      if (data.action === "updateStatus") {
         setTask(data.task);
       }
     })
@@ -70,10 +73,10 @@ function ActiveClass() {
   return (
     <ActiveClassContainer>
       <TaskText> {task} </TaskText>
-      <p> Total users: <Odometer value={users.length}/> </p>
-      <p> <Odometer value={users.filter(user => user.status === 'done').length}/> users done. </p>
-      <p> <Odometer value={users.filter(user => user.status === 'issue').length}/>  users having issues. </p>
-      <p> <Odometer value={users.filter(user => user.status === 'initial').length}/>  users doing the task. </p>
+      <p> Total users: <Odometer value={users.length}/></p>
+      <p><Odometer value={users.filter(user => user.status === 'done').length}/> users done. </p>
+      <p><Odometer value={users.filter(user => user.status === 'issue').length}/> users having issues. </p>
+      <p><Odometer value={users.filter(user => user.status === 'initial').length}/> users doing the task. </p>
       <Dialog open={showIssueDialog} onClose={() => setShowIssueDialog(false)} fullWidth={true} maxWidth={'lg'}>
         <IssueContainer>
           <FontAwesomeContainer icon={['fas', 'xmark']} onClick={() => setShowIssueDialog(false)}/>
@@ -88,14 +91,44 @@ function ActiveClass() {
             }}
           />
 
-          <Button variant={'contained'} sx={{marginTop: '15px'}} disabled={!showIssueDialog} onClick={async () => {
+          <Button variant={'contained'} sx={{marginTop: '15px'}} disabled={!showIssueDialog || !issue} onClick={async() => {
             await UserServiceApi.updateIssues({
               userId: localStorage.getItem('audientricUserId') || '',
               issue
-            })
+            });
+
             setShowIssueDialog(false);
+            setIssue("");
           }}>
             Submit Issue
+          </Button>
+        </IssueContainer>
+      </Dialog>
+
+      <Dialog open={showAnswerDialog} onClose={() => setShowAnswerDialog(false)} fullWidth={true} maxWidth={'lg'}>
+        <IssueContainer>
+          <FontAwesomeContainer icon={['fas', 'xmark']} onClick={() => setShowAnswerDialog(false)}/>
+          <IssueText> Please type your answer. </IssueText>
+          <TextField
+            label="What is your answer?"
+            multiline
+            rows={8}
+            placeholder="Please type your answer..." style={{width: '100%', marginTop: 20}}
+            onChange={(e) => {
+              setAnswer(e.currentTarget.value);
+            }}
+          />
+
+          <Button variant={'contained'} sx={{marginTop: '15px'}} disabled={!showAnswerDialog || !answer} onClick={async () => {
+            await UserServiceApi.updateAnswers({
+              userId: localStorage.getItem('audientricUserId') || '',
+              answer
+            });
+            setShowAnswerDialog(false);
+            setAnswer("");
+            onStatusChange('done');
+          }}>
+            Submit Answer
           </Button>
         </IssueContainer>
       </Dialog>
@@ -111,6 +144,12 @@ function ActiveClass() {
         onStatusChange('issue');
       }}>
         <FontAwesomeIcon icon={['fas', 'exclamation']}/>
+      </OptionsButton>
+
+      <OptionsButton backgroundColor={'#369fe0'} onClick={() => {
+        setShowAnswerDialog(true);
+      }}>
+        <FontAwesomeIcon icon={['fas', 'pen']}/>
       </OptionsButton>
 
 

@@ -99,3 +99,30 @@ export const updateIssues = async (req: Request, res: Response, next: NextFuncti
       });
     })
 }
+
+export const updateAnswers = async (req: Request, res: Response, next: NextFunction) => {
+  const {userId} = req.params;
+  const {answer} = req.body;
+
+  User.findByIdAndUpdate(userId, {
+    $push: {
+      "answers": answer
+    },
+    updatedAt: new Date(new Date().toISOString())
+  }, {new: true})
+    .then(user => {
+      AudentricSocket.getInstance().emit("user event", {
+        action: "updateAnswers",
+        answer,
+        user
+      });
+
+      return res.json(user);
+    })
+    .catch(e => {
+      return res.status(404).send({
+        error: e.message,
+        message: "Unable to update user's issues."
+      });
+    })
+}

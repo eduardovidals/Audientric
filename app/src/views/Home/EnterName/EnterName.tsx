@@ -31,16 +31,13 @@ function EnterName(props: EnterNameProps) {
   }, [])
 
   const onSubmit = async (data: any) => {
-    if (data.fullName === "Frontend123") {
+    if (data.fullName === "Elmo123") {
       localStorage.setItem('audientricUserId', "635a315a786b352a6b365825");
       dispatch(updateHomeScreen('AdminScreen'));
     } else {
       const user = await UserServiceApi.createUser({
         fullName: data.fullName
       });
-
-      console.log('CREATED THE USER!!!!!!');
-      console.log(user);
 
       await ClassServiceApi.joinClass({userId: user._id, classId: '6359407d47773e1371ff8cec'});
 

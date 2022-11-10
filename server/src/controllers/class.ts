@@ -57,7 +57,7 @@ export const updateTask = async (req: Request, res: Response, next: NextFunction
         '_id': {
           $in: classObj?.users
         }
-      }, {status: 'initial', issues: []}, {new: true, runValidators: true});
+      }, {status: 'initial', issues: [], answers: []}, {new: true, runValidators: true});
 
       AudentricSocket.getInstance().emit("class event", {
         action: "updateTask",

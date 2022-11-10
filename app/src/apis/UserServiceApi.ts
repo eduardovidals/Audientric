@@ -25,6 +25,12 @@ export const updateIssues = (data: { userId: string, issue: string }) => {
   return api.put(`/${userId}/issues`, rest).then(res => res.data);
 }
 
+export const updateAnswers = (data: { userId: string, answer: string }) => {
+  const {userId, ...rest} = data;
+
+  return api.put(`/${userId}/answers`, rest).then(res => res.data);
+}
+
 export const updateStatus = (data: { userId: string, status: string }) => {
   const {userId, ...rest} = data;
 

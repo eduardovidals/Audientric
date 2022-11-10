@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateIssues = exports.updateStatus = exports.deleteUser = exports.createUser = exports.getUsers = void 0;
+exports.updateAnswers = exports.updateIssues = exports.updateStatus = exports.deleteUser = exports.createUser = exports.getUsers = void 0;
 const user_1 = __importDefault(require("../models/user"));
 const socket_1 = __importDefault(require("../util/socket"));
 const getUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -106,3 +106,28 @@ const updateIssues = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
     });
 });
 exports.updateIssues = updateIssues;
+const updateAnswers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId } = req.params;
+    const { answer } = req.body;
+    user_1.default.findByIdAndUpdate(userId, {
+        $push: {
+            "answers": answer
+        },
+        updatedAt: new Date(new Date().toISOString())
+    }, { new: true })
+        .then(user => {
+        socket_1.default.getInstance().emit("user event", {
+            action: "updateAnswers",
+            answer,
+            user
+        });
+        return res.json(user);
+    })
+        .catch(e => {
+        return res.status(404).send({
+            error: e.message,
+            message: "Unable to update user's issues."
+        });
+    });
+});
+exports.updateAnswers = updateAnswers;

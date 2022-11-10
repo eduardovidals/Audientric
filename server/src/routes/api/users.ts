@@ -1,5 +1,6 @@
 import express from "express";
 import * as UserController from '../../controllers/user';
+import {updateAnswers} from "../../controllers/user";
 
 const router = express.Router();
 
@@ -153,5 +154,42 @@ router.put("/:userId/status", UserController.updateStatus);
  *               $ref: '#/components/schemas/user'
  */
 router.put("/:userId/issues", UserController.updateIssues);
+
+/**
+ * @swagger
+ * /users/{userId}/issues:
+ *   put:
+ *     summary: Updates the user's issues.
+ *     description: Adds an issue to the user's issues in the database.
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         description: id of the user to be changed
+ *         schema:
+ *          type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               issue:
+ *                 type: string
+ *                 required: true
+ *                 description: the issue to be added to the user
+ *                 example: "I am having trouble with CSS."
+ *     responses:
+ *       200:
+ *         description: The updated user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               $ref: '#/components/schemas/user'
+ */
+router.put("/:userId/answers", UserController.updateAnswers);
 
 export default router;

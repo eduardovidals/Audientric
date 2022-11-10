@@ -17,7 +17,6 @@ import * as ClassServiceApi from "apis/ClassServiceApi";
 import openSocket from "socket.io-client";
 import {useEffect, useState} from "react";
 import {IssueText} from "views/Home/ActiveClass/ActiveClass.styles";
-import * as UserServiceApi from "apis/UserServiceApi";
 
 function renderStatus(params: any) {
   switch (params.row.status) {
@@ -65,11 +64,28 @@ function renderIssues(params: any) {
   )
 }
 
+function renderAnswers(params: any) {
+  return (
+    <AdminUserIssueList>
+      {
+        params.row.answers.map((issue: string) => {
+          return (
+            <AdminUserIssue>
+              <AdminUserIssueText> {issue} </AdminUserIssueText>
+            </AdminUserIssue>
+          )
+        })
+      }
+    </AdminUserIssueList>
+  )
+}
+
 const columns: GridColDef[] = [
   {field: 'id', headerName: 'ID'},
   {field: 'fullName', headerName: 'Full Name'},
   {field: 'status', headerName: 'Status', renderCell: renderStatus, align: 'center', headerAlign: 'center'},
-  {field: 'issues', headerName: 'Issues', width: 400, renderCell: renderIssues},
+  {field: 'issues', headerName: 'Issues', width: 200, renderCell: renderIssues},
+  {field: 'answers', headerName: 'Answers', width: 200, renderCell: renderAnswers}
 ];
 
 function Admin() {
@@ -99,6 +115,9 @@ function Admin() {
 
     socket.on("user event", async (data) => {
       switch (data.action) {
+        case "updateAnswers":
+          getUsers();
+          break;
         case "updateIssues":
           getUsers();
           break;

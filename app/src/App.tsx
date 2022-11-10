@@ -8,9 +8,9 @@ import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {store} from "store/store";
 import {library} from "@fortawesome/fontawesome-svg-core";
 import Home from "views/Home/Home";
-import {faCheck, faExclamation, faQuestion, faXmark} from "@fortawesome/free-solid-svg-icons";
+import {faCheck, faExclamation, faPen, faQuestion, faXmark} from "@fortawesome/free-solid-svg-icons";
 
-library.add(faCheck, faExclamation, faQuestion, faXmark);
+library.add(faCheck, faExclamation, faQuestion, faXmark, faPen);
 
 function App() {
   return (

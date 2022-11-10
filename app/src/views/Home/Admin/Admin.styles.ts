@@ -12,7 +12,6 @@ export const AdminContainer = styled.div`
   box-sizing: border-box;
   width: 100%;
   height: 100%;
-  background-color: red;
 `
 
 export const IconContainer = styled.div<Icon>`
