@@ -20,6 +20,7 @@ function Home() {
   const screen = useAppSelector(state => state.homeScreen);
   const dispatch = useAppDispatch();
 
+
   const createSocketConnection = () => {
     const socket = openSocket(process.env.REACT_APP_API_URL as string);
 
@@ -47,6 +48,10 @@ function Home() {
   };
 
   useEffect(() => {
+    if (localStorage.getItem("audientricName")){
+      dispatch(updateHomeScreen("WelcomeScreen"));
+    }
+
     setInterval(() => {
       let randomColor = colors[randomIntFromInterval(0, colors.length - 1)];
       // ensures a new color is picked for background
@@ -59,6 +64,7 @@ function Home() {
   }, []);
 
   const renderScreen = (screen: string) => {
+
     switch (screen) {
       case "EnterScreen":
         return <EnterName bgColor={bgColor}/>
