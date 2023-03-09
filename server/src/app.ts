@@ -65,6 +65,7 @@ app.use(express.json());
 // use routes
 app.use('/api/users', users);  // path must route to lambda
 app.use('/api/classes', classes);  // path must route to lambda
+// test route
 app.get('/api', (req, res) => res.send('Hello world!'));
 
 const port = process.env.PORT || 8082;
